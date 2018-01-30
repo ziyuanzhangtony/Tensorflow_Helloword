@@ -9,3 +9,5 @@ https://developer.nvidia.com/cuda-90-download-archive
 
 - cudnn 7.0 
 https://developer.nvidia.com/cudnn
+
+### Have fun
