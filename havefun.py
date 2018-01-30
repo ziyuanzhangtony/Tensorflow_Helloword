@@ -1,39 +1,35 @@
 # import mnist dataset
+import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
+# import tensorflow.contrib.eager as tfe
+# tfe.enable_eager_execution()
+
+
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
-import tensorflow as tf
 
-
-
-
-# define input layer
 x  = tf.placeholder(tf.float32, [None, 784], name='x')
-x_image = tf.reshape(x, [-1, 28, 28, 1]) #reshape image from 1*784 to 28*28 since we need spatial information for applying convolution
+x_image = tf.reshape(x, [-1, 28, 28, 1])
 
-y_ = tf.placeholder(tf.float32, [None, 10],  name='y_') #this is label
+y_ = tf.placeholder(tf.float32, [None, 10],  name='y_')
 
 # define convolutional layers
 
-def conv2d(x, W):
-  return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
-
-def max_pool_2x2(x):
-  return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1], padding='SAME')
 # Convolutional layer 1
 W_conv1 = tf.Variable(tf.truncated_normal([5, 5, 1, 32], stddev=0.1))
 b_conv1 = tf.Variable(tf.constant(0.1, shape=[32]))
 
 h_conv1 = tf.nn.relu(tf.nn.conv2d(x_image, W_conv1, strides=[1, 1, 1, 1], padding='SAME')+b_conv1)
-h_pool1 = max_pool_2x2(h_conv1)
+h_pool1 = tf.nn.max_pool(h_conv1, ksize=[1, 2, 2, 1],
+                        strides=[1, 2, 2, 1], padding='SAME')
 
 # Convolutional layer 2
 W_conv2 = tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev=0.1))
 b_conv2 = tf.Variable(tf.constant(0.1, shape=[64]))
 
 h_conv2 = tf.nn.relu( tf.nn.conv2d(h_pool1, W_conv2, strides=[1, 1, 1, 1], padding='SAME')  + b_conv2)
-h_pool2 = max_pool_2x2(h_conv2)
+h_pool2 = tf.nn.max_pool(h_conv2, ksize=[1, 2, 2, 1],
+                        strides=[1, 2, 2, 1], padding='SAME')
 
 # Fully connected layer 1
 h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
